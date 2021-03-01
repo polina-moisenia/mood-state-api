@@ -1,48 +1,37 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MoodStateApi.Services;
 
 namespace MoodStateApi {
     public class Startup {
-        public Startup (IConfiguration configuration) {
+        public Startup(IConfiguration configuration) {
             Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices (IServiceCollection services) {
-            services.AddControllers ()]
+        public void ConfigureServices(IServiceCollection services) {
+            services.AddControllers()
             .AddJsonOptions(options => {
-                    options.JsonSerializerOptions.IgnoreNullValues = true;
-                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                });
-
-            // Register the Swagger generator, defining 1 or more Swagger documents
-            services.AddSwaggerGen (c => {
-                c.SwaggerDoc ("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+                options.JsonSerializerOptions.IgnoreNullValues = true;
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
-             services.AddSingleton<IService, Service> ();
+            services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" }));
+
+            services.AddSingleton<IService, Service>();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure (IApplicationBuilder app, IWebHostEnvironment env) {
-            // Enable middleware to serve generated Swagger as a JSON endpoint.
-            app.UseSwagger ();
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+            app.UseRouting();
+            app.UseEndpoints(endpoints => endpoints.MapControllers());
 
-            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.),
-            // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI (c => {
-                c.SwaggerEndpoint ("/swagger/v1/swagger.json", "My API V1");
-            });
-
-            app.UseRouting ();
-            app.UseEndpoints (endpoints => {
-                endpoints.MapControllers ();
-            });
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));
         }
     }
 }
