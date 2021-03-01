@@ -33,8 +33,12 @@ namespace MoodStateApi {
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
             app.UseRouting();
-            app.UseEndpoints(endpoints => endpoints.MapControllers());
             app.UseCors(CORS_POLICY);
+            app.UseMiddleware<CorsMiddleware>();
+
+            app.UseEndpoints(endpoints => {
+                endpoints.MapControllers();
+            });
 
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"));

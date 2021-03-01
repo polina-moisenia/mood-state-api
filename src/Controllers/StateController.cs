@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
 using MoodStateApi.Models;
 using MoodStateApi.Services;
 
 namespace MoodStateApi.Controllers {
     [Route("state")]
     [Produces("application/json")]
+    [EnableCors("DefaultPolicy")]
     [ApiController]
     public class StateController : ControllerBase {
         private readonly IService service;
@@ -21,6 +23,11 @@ namespace MoodStateApi.Controllers {
         [HttpPost]
         public ActionResult<string> Update([FromBody] RequestModel state) {
             return Ok(service.Update(state.State));
+        }
+
+        [HttpOptions]
+        public ActionResult Options() {
+            return Ok();
         }
     }
 }
